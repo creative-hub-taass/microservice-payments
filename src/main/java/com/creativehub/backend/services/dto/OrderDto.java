@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Data
 public class OrderDto {
-    private final UUID id;
+    //private final UUID id;
     private final UUID idArtwork;
     private final UUID idUser;
     private final Float importo;

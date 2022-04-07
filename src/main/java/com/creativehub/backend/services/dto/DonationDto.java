@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Data
 public class DonationDto {
-    private final UUID id;
+    //private final UUID id;
     private final UUID idSender;
     private final UUID idCreator;
     private final Float importo;

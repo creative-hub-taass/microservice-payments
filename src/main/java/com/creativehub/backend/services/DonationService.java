@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface DonationService {
 
-    DonationDto saveDonation(UUID id, Float importo);
+    String saveDonation(DonationDto donationDto);
 
     List<DonationDto> getAllDonations(UUID id);
 

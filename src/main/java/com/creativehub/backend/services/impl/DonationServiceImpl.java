@@ -21,8 +21,14 @@ public class DonationServiceImpl implements DonationService {
 
 
     @Override
-    public DonationDto saveDonation(UUID id, Float importo) {
+    public String saveDonation(DonationDto donationDto) {
         //TODO
+        //ottengo le informazioni dell'utente tramite REST controller
+        //controllo se è un utente creator (creator != null)
+        //creo il pagamento
+        //creo un oggetto donazione e lo salvo nel repository
+        //ritorno il link per effettuare la transazione
+
         return null;
     }
 
