@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Currency;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -26,10 +27,13 @@ public class Donation {
     private UUID idCreator;
 
     @Column(name = "importo", nullable = false)
-    private Float importo;
+    private Double importo;
 
     @Column(name = "message")
     private String message;
+
+    @Column(name = "currency")
+    private Currency currency;
 
     @Column(name = "timestamp", nullable = false)
     private Timestamp timestamp;

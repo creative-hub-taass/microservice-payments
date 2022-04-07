@@ -19,6 +19,7 @@ public class PaypalService {
 
     public Payment createPayment(
                     Double total,
+                    String emailPayee,
                     String currency,
                     String method,
                     String intent,
@@ -30,7 +31,6 @@ public class PaypalService {
         amount.setCurrency(currency);
         total = new BigDecimal(total).setScale(2, RoundingMode.HALF_UP).doubleValue();
         amount.setTotal(String.format("%.2f", total));
-
         Transaction transaction = new Transaction();
         transaction.setDescription(description);
         transaction.setAmount(amount);
@@ -38,18 +38,20 @@ public class PaypalService {
         List transactions = new ArrayList<>();
         transactions.add(transaction);
 
-        Payer payer = new Payer();
-        payer.setPaymentMethod(method.toString());
+        Payee payee = new Payee();
+        payee.setEmail(emailPayee);
 
+        Payer payer = new Payer();
+        payer.setPaymentMethod(method);
+        transaction.setPayee(payee);
         Payment payment = new Payment();
-        payment.setIntent(intent.toString());
+        payment.setIntent(intent);
         payment.setPayer(payer);
         payment.setTransactions(transactions);
         RedirectUrls redirectUrls = new RedirectUrls();
         redirectUrls.setCancelUrl(cancelUrl);
         redirectUrls.setReturnUrl(successUrl);
         payment.setRedirectUrls(redirectUrls);
-
         return payment.create(apiContext);
     }
 

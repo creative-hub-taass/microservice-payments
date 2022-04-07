@@ -19,4 +19,5 @@ public interface AcquireService {
     void deleteOrderById(UUID id);
 
 
+    String successAcquire(String paymentId, String payerId);
 }

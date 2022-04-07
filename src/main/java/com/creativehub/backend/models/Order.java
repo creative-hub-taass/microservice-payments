@@ -25,7 +25,7 @@ public class Order {
     private UUID idUser;
 
     @Column(name = "importo", nullable = false)
-    private Float importo;
+    private Double importo;
 
     @Column(name = "destination_address", nullable = false)
     private String destinationAddress;

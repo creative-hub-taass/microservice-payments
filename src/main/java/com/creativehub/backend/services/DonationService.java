@@ -9,6 +9,8 @@ public interface DonationService {
 
     String saveDonation(DonationDto donationDto);
 
+    String successAcquire(String paymentId, String payerId);
+
     List<DonationDto> getAllDonations(UUID id);
 
     Optional<DonationDto> findDonationById(UUID id);
