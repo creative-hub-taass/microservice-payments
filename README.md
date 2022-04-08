@@ -2,7 +2,7 @@
 
 [![Docker Image CI](https://github.com/creative-hub-taass/microservice-payments/actions/workflows/docker-image.yml/badge.svg)](https://github.com/creative-hub-taass/microservice-payments/actions/workflows/docker-image.yml)
 
-Microservizio interazioni
+Microservizio pagamenti
 
 ## Linux / Mac (bash)
 

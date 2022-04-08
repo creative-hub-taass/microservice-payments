@@ -4,13 +4,13 @@ WORKDIR /app
 USER root
 COPY pom.xml .
 COPY src ./src
-RUN --mount=type=cache,target=/root/.m2 mvn -B -Dmaven.test.skip clean package
+RUN  mvn -B -Dmaven.test.skip clean package
 
 #
 # Package stage
 #
 FROM openjdk:17-alpine
 WORKDIR /app
-EXPOSE 8080
+EXPOSE 9090
 COPY --from=build /app/target/*.jar appbootrest.jar
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "appbootrest.jar"]
