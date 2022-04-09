@@ -35,7 +35,7 @@ public class AcquireServiceImpl implements AcquireService {
     public static final String CANCEL_URL = "/api/v1/payments/cancel";
     @Value("${url.publications}")
     public String urlPublications;
-    private static Order currentOrder;
+    private static Order currentOrder; //implementare una struttura dati hashmap con chiave paymentid e valore l'ordine
     @Value("${url.payments}")
     public String urlPayments;
 
@@ -51,8 +51,8 @@ public class AcquireServiceImpl implements AcquireService {
             Payment payment = paypalService.createPayment(orderDto.getImporto(),artwork.getPaymentEmail(),artwork.getCurrency().getCurrencyCode(),"paypal","SALE","",
             urlPayments+CANCEL_URL,urlPayments+SUCCESS_URL);
             for(Links link:payment.getLinks()){
-                if(link.getRel().equals("approval_url")){
-                    return "redirect:"+link.getHref();
+                if(link.getRel().equals("approval_url")){ 
+                    return "redirect:"+link.getHref();  //inserire l'ordine nella struttura hashmap con chiaveil paymentid
                 }
             }
         }catch (PayPalRESTException e){
@@ -70,7 +70,7 @@ public class AcquireServiceImpl implements AcquireService {
                 System.out.println(payment.toJSON());
 
                 if(payment.getState().equals("approved")){
-                    orderRepository.save(currentOrder);
+                    orderRepository.save(currentOrder);  //salva l'ordine ed elimina dalla struttura dati hashmap la chiave paymentid
                     return "success";
                 }
             } catch(PayPalRESTException e){
