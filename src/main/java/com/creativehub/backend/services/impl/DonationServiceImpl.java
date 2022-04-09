@@ -1,10 +1,8 @@
 package com.creativehub.backend.services.impl;
 
 import com.creativehub.backend.models.Donation;
-import com.creativehub.backend.models.Order;
 import com.creativehub.backend.repositories.DonationRepository;
 import com.creativehub.backend.services.DonationService;
-import com.creativehub.backend.services.dto.ArtworkDto;
 import com.creativehub.backend.services.dto.DonationDto;
 import com.creativehub.backend.services.dto.UserDto;
 import com.creativehub.backend.services.mapper.DonationMapper;
@@ -13,45 +11,47 @@ import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DonationServiceImpl implements DonationService {
 
     private final DonationRepository donationRepository;
     private final DonationMapper donationMapper;
     private final PaypalService paypalService;
-    public static final String SUCCESS_URL = "/api/v1/payments/success";
-    public static final String CANCEL_URL = "/api/v1/payments/cancel";
-    private static Donation currentDonation;
+    @Value("${path.success}")
+    public static String SUCCESS_URL;
+    @Value("${path.cancel}")
+    public static String CANCEL_URL;
+
     @Value("${url.users}")
     public String urlUsers;
     @Value("${url.payments}")
     public String urlPayments;
 
+    private static final HashMap<String,Donation> donation_map = new HashMap<>();
 
     @Override
     public String saveDonation(DonationDto donationDto) {
         UserDto userCreator = RestService(donationDto.getIdCreator());
 
-        if(userCreator.getCreator()==null) return "redirect :/";
-
-        currentDonation = donationMapper.donationDtoToDonation(donationDto);
+        if(userCreator!=null && userCreator.getCreator()==null) return "redirect :/";
 
         try {
             Payment payment = paypalService.createPayment(donationDto.getImporto(),userCreator.getCreator().getPaymentEmail(),donationDto.getCurrency().getCurrencyCode(),"paypal","SALE","",
                     urlPayments+CANCEL_URL,urlPayments+SUCCESS_URL);
             for(Links link:payment.getLinks()){
                 if(link.getRel().equals("approval_url")){
+                    donation_map.put(payment.getId(),donationMapper.donationDtoToDonation(donationDto));
                     return "redirect:"+link.getHref();
                 }
             }
@@ -69,7 +69,8 @@ public class DonationServiceImpl implements DonationService {
             System.out.println(payment.toJSON());
 
             if(payment.getState().equals("approved")){
-                donationRepository.save(currentDonation);
+                donationRepository.save(donation_map.get(paymentId));
+                donation_map.remove(paymentId);
                 return "success";
             }
         } catch(PayPalRESTException e){

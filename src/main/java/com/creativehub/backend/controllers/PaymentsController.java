@@ -5,7 +5,6 @@ import com.creativehub.backend.services.DonationService;
 import com.creativehub.backend.services.dto.DonationDto;
 import com.creativehub.backend.services.dto.OrderDto;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,7 +36,7 @@ public class PaymentsController {
     public String cancelPay(){
         return "cancel";
     }
-
+    //pagamento avvenuto con successo
     @GetMapping("/success")
     public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId){
         return acquireService.successAcquire(paymentId,payerId);
