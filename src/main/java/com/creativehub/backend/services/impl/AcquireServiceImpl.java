@@ -52,6 +52,7 @@ public class AcquireServiceImpl implements AcquireService {
             urlPayments+CANCEL_URL,urlPayments+SUCCESS_URL);
 
             for(Links link:payment.getLinks()){
+
                 if(link.getRel().equals("approval_url")){
                     order_map.put(payment.getId(),orderMapper.orderDtoToOrder(orderDto));
                     return "redirect:"+link.getHref();
@@ -67,7 +68,6 @@ public class AcquireServiceImpl implements AcquireService {
     @Override
     public String successAcquire(String paymentId, String payerId) {
             try{
-
                 Payment payment = paypalService.executePayment(paymentId, payerId);
                 System.out.println(payment.toJSON());
 
