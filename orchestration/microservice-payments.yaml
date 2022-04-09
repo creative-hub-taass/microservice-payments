@@ -43,4 +43,4 @@ spec:
     - port: 9090 # Port inside the cluster
       targetPort: 9090 #Il servizio ascolta per le richieste nella porta 8443 e direziona il traffico nella porta 8080 dei Pods target
       nodePort: 30008
-  type: LoadBalancer #Il type ClusterIP espone i Pods accessibili solo all'interno del cluster
+  type: LoadBalancer

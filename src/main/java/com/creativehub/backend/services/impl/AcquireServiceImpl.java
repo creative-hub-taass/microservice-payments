@@ -13,46 +13,49 @@ import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class AcquireServiceImpl implements AcquireService {
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final PaypalService paypalService;
-    public static final String SUCCESS_URL = "/api/v1/payments/success";
-    public static final String CANCEL_URL = "/api/v1/payments/cancel";
+    @Value("${path.success}")
+    public static String SUCCESS_URL;
+    @Value("${path.cancel}")
+    public static String CANCEL_URL;
     @Value("${url.publications}")
     public String urlPublications;
-    private static Order currentOrder; //implementare una struttura dati hashmap con chiave paymentid e valore l'ordine
     @Value("${url.payments}")
     public String urlPayments;
+
+    private static final HashMap<String,Order> order_map = new HashMap<>();
 
     @Override
     public String acquireArtwork(OrderDto orderDto) {
 
-       ArtworkDto artwork = RestService(orderDto.getIdArtwork());
-        if(!artwork.getOnSale()) return "redirect :/";
-
-        currentOrder = orderMapper.orderDtoToOrder(orderDto);
+        ArtworkDto artwork = RestService(orderDto.getIdArtwork());
+        if(artwork==null || !artwork.getOnSale()) return "redirect :/";
 
         try {
             Payment payment = paypalService.createPayment(orderDto.getImporto(),artwork.getPaymentEmail(),artwork.getCurrency().getCurrencyCode(),"paypal","SALE","",
             urlPayments+CANCEL_URL,urlPayments+SUCCESS_URL);
+
             for(Links link:payment.getLinks()){
-                if(link.getRel().equals("approval_url")){ 
-                    return "redirect:"+link.getHref();  //inserire l'ordine nella struttura hashmap con chiaveil paymentid
+
+                if(link.getRel().equals("approval_url")){
+                    order_map.put(payment.getId(),orderMapper.orderDtoToOrder(orderDto));
+                    return "redirect:"+link.getHref();
                 }
             }
         }catch (PayPalRESTException e){
@@ -65,12 +68,12 @@ public class AcquireServiceImpl implements AcquireService {
     @Override
     public String successAcquire(String paymentId, String payerId) {
             try{
-
                 Payment payment = paypalService.executePayment(paymentId, payerId);
                 System.out.println(payment.toJSON());
 
                 if(payment.getState().equals("approved")){
-                    orderRepository.save(currentOrder);  //salva l'ordine ed elimina dalla struttura dati hashmap la chiave paymentid
+                    orderRepository.save(order_map.get(paymentId));
+                    order_map.remove(paymentId);
                     return "success";
                 }
             } catch(PayPalRESTException e){
