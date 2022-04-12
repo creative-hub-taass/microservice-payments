@@ -1,31 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    labels:
-        io.kompose.service: db-payments
-    name: db-payments
+  labels:
+    io.kompose.service: db-payments
+  name: db-payments
 spec:
-    replicas: 1
-    selector:
-        matchLabels:
-            io.kompose.service: db-payments
-    strategy: { }
-    template:
-        metadata:
-            labels:
-                io.kompose.service: db-payments
-        spec:
-            containers:
-                - env:
-                    - name: POSTGRES_DB
-                      value: creative-hub-payments
-                    - name: POSTGRES_PASSWORD
-                      value: postgres
-                    - name: POSTGRES_USER
-                      value: postgres
-                  image: postgres:alpine
-                  name: db-payments
-                  ports:
-                    - containerPort: 5432
-                  resources: { }
-                restartPolicy: Always
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: db-payments
+  strategy: { }
+  template:
+    metadata:
+      labels:
+        io.kompose.service: db-payments
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_DB
+              value: creative-hub-payments
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_USER
+              value: postgres
+          image: postgres:alpine
+          name: db-payments
+          ports:
+            - containerPort: 5432
+          resources: { }
+      restartPolicy: Always

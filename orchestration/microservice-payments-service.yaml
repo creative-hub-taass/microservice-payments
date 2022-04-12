@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-    labels:
-        io.kompose.service: microservice-payments
-    name: microservice-payments
+  labels:
+    io.kompose.service: microservice-payments
+  name: microservice-payments
 spec:
-    ports:
-        - name: api
-          port: 8080
-          targetPort: 8080
-    selector:
-        io.kompose. service: microservice-payments
+  ports:
+    - name: api
+      port: 8080
+      targetPort: 8080
+  selector:
+    io.kompose.service: microservice-payments
