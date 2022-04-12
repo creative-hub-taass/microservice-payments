@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    labels:
+        io.kompose.service: microservice-payments
+    name: microservice-payments
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            io.kompose.service: microservice-payments
+    strategy: { }
+    template:
+        metadata:
+            labels:
+                io.kompose.service: microservice-payments
+        spec:
+            containers:
+                - env:
+                    - name: API_GATEWAY_URL
+                      value: $GATEWAY_URL
+                    - name: DB_HOST
+                      value: db-payments
+                    - name: DB_NAME
+                      value: creative-hub-payments
+                    - name: DB_PASSWORD
+                      value: postgres
+                    - name: DB_USERNAME
+                      value: postgres
+                  image: ghcr.io/creative-hub-taass/microservice-payments:latest
+                  name: microservice-payments
+                  ports:
+                    - containerPort: 8080
+                  resources: { }
+            restartPolicy: Always
