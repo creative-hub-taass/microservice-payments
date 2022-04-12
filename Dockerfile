@@ -11,6 +11,6 @@ RUN  mvn -B -Dmaven.test.skip clean package
 #
 FROM openjdk:17-alpine
 WORKDIR /app
-EXPOSE 9090
+EXPOSE 8080
 COPY --from=build /app/target/*.jar appbootrest.jar
 ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "appbootrest.jar"]
