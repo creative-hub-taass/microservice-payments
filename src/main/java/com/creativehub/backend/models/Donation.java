@@ -15,26 +15,25 @@ import java.util.UUID;
 @Entity
 @Table(name = "donation")
 public class Donation {
+	@Id
+	@GeneratedValue
+	private UUID id;
 
-    @Id
-    @GeneratedValue
-    private UUID id;
+	@Column(name = "id_sender", nullable = false)
+	private UUID idSender;
 
-    @Column(name = "id_sender", nullable = false)
-    private UUID idSender;
+	@Column(name = "id_creator", nullable = false)
+	private UUID idCreator;
 
-    @Column(name = "id_creator", nullable = false)
-    private UUID idCreator;
+	@Column(name = "importo", nullable = false)
+	private Double importo;
 
-    @Column(name = "importo", nullable = false)
-    private Double importo;
+	@Column(name = "message")
+	private String message;
 
-    @Column(name = "message")
-    private String message;
+	@Column(name = "currency")
+	private Currency currency;
 
-    @Column(name = "currency")
-    private Currency currency;
-
-    @Column(name = "timestamp", nullable = false)
-    private Timestamp timestamp;
+	@Column(name = "timestamp", nullable = false)
+	private Timestamp timestamp;
 }
