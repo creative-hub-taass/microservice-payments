@@ -17,6 +17,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.cors()
 				.and()
 				.csrf().disable()
+				.logout().disable()
+				.formLogin().disable()
 				.headers(HeadersConfigurer::cacheControl);
+
 	}
 }
