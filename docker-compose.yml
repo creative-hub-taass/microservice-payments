@@ -19,5 +19,11 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=postgres
       - API_GATEWAY_URL=http://localhost:8080
+      - API_PUBLICATIONS_URL=$PUBLICATIONS_URL
+      - API_USERS_URL=$USERS_URL
+      - API_PAYMENTS_URL=$PAYMENTS_URL
+      - PAYPAL_MODE=sandbox
+      - PAYPAL_CLIENT_ID=ASa3PDrzVCqEFVY0xB0L0YgeiIezvaaHToCzaE6j3z1_3XRYtnSQifbrJQ9UfA4k-7sh4ew5SbdeUQ-3
+      - PAYPAL_CLIENT_SECRET=EEdnAETnP0n4eRCRg0tbISZZDJBGlLSwC24GWJUULL0AElo8-P4C78iqTnAAus4TKumvFiLF-sYOnBLE
     depends_on:
       - db-payments

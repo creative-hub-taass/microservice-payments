@@ -6,6 +6,7 @@ COPY pom.xml .
 COPY src ./src
 RUN  mvn -B -Dmaven.test.skip clean package
 
+
 #
 # Package stage
 #
