@@ -19,6 +19,18 @@ spec:
         - env:
             - name: API_GATEWAY_URL
               value: $GATEWAY_URL
+            - name: API_PUBLICATIONS_URL
+              value: $PUBLICATIONS_URL
+            - name: API_USERS_URL
+              value: $USERS_URL
+            - name: API_PAYMENTS_URL
+              value: $PAYMENTS_URL
+            - name: PAYPAL_MODE
+              value: sandbox
+            - name: PAYPAL_CLIENT_ID
+              value: ASa3PDrzVCqEFVY0xB0L0YgeiIezvaaHToCzaE6j3z1_3XRYtnSQifbrJQ9UfA4k-7sh4ew5SbdeUQ-3
+            - name: PAYPAL_CLIENT_SECRET
+              value: EEdnAETnP0n4eRCRg0tbISZZDJBGlLSwC24GWJUULL0AElo8-P4C78iqTnAAus4TKumvFiLF-sYOnBLE
             - name: DB_HOST
               value: db-payments
             - name: DB_NAME
