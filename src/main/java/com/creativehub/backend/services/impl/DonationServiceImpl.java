@@ -33,9 +33,9 @@ public class DonationServiceImpl implements DonationService {
     @Value("${path.cancel}")
     public static String CANCEL_URL;
 
-    @Value("${url.users}")
+    @Value("${users.url}")
     public String urlUsers;
-    @Value("${url.payments}")
+    @Value("${payments.url}")
     public String urlPayments;
 
     private static final HashMap<String,Donation> donation_map = new HashMap<>();
