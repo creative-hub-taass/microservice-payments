@@ -34,9 +34,9 @@ public class AcquireServiceImpl implements AcquireService {
     public static String SUCCESS_URL;
     @Value("${path.cancel}")
     public static String CANCEL_URL;
-    @Value("${url.publications}")
+    @Value("${publications.url}")
     public String urlPublications;
-    @Value("${url.payments}")
+    @Value("${payments.url}")
     public String urlPayments;
 
     private static final HashMap<String,Order> order_map = new HashMap<>();
