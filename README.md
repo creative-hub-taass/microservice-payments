@@ -23,9 +23,9 @@ $env:COMPOSE_DOCKER_CLI_BUILD=1; $env:DOCKER_BUILDKIT=1; docker-compose up --bui
 ```shell
 okteto kubeconfig
 export GATEWAY_URL=https://api-gateway-acontenti.cloud.okteto.net
-export PUBLICATIONS_URL=
-export USERS_URL=
-export PAYMENTS_URL=
+export PUBLICATIONS_URL=https://microservice-publications-zathsl.cloud.okteto.net/
+export USERS_URL=https://microservice-users-zathsl.cloud.okteto.net/
+export PAYMENTS_URL=https://microservice-payments-zathsl.cloud.okteto.net/
 for f in ./orchestration/*.yaml; do cat $f | envsubst | kubectl apply -f -; done
 ```
 
