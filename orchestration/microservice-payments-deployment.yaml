@@ -17,12 +17,8 @@ spec:
     spec:
       containers:
         - env:
-            - name: API_PUBLICATIONS_URL
-              value: microservice-publications
-            - name: API_USERS_URL
-              value: microservice-users
-            - name: API_PAYMENTS_URL
-              value: microservice-payments
+            - name: API_GATEWAY_URL
+              value: $GATEWAY_URL
             - name: PAYPAL_MODE
               value: sandbox
             - name: PAYPAL_CLIENT_ID

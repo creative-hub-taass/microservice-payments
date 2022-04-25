@@ -35,16 +35,16 @@ public class AcquireServiceImpl implements AcquireService {
 	private final PaypalService paypalService;
 	@Value("${publications.url}")
 	public String urlPublications;
-	@Value("${payments.url}")
-	public String urlPayments;
+	@Value("${gateway.url}")
+	private String gatewayUrl;
 
 	@Override
 	public String acquireArtwork(OrderDto orderDto) {
 		ArtworkDto artwork = RestService(orderDto.getIdArtwork());
-		if (artwork == null || !artwork.getOnSale()) return "redirect :/";
+		if (artwork == null || !artwork.getOnSale()) return "redirect:/";
 		try {
 			Payment payment = paypalService.createPayment(orderDto.getImporto(), artwork.getPaymentEmail(), artwork.getCurrency().getCurrencyCode(), "paypal", "SALE", "",
-					urlPayments + CANCEL_URL, urlPayments + SUCCESS_URL);
+					gatewayUrl + CANCEL_URL, gatewayUrl + SUCCESS_URL);
 			for (Links link : payment.getLinks()) {
 				if (link.getRel().equals("approval_url")) {
 					order_map.put(payment.getId(), orderMapper.orderDtoToOrder(orderDto));
@@ -54,7 +54,7 @@ public class AcquireServiceImpl implements AcquireService {
 		} catch (PayPalRESTException e) {
 			e.printStackTrace();
 		}
-		return "redirect :/";
+		return "redirect:/";
 	}
 
 	@Override

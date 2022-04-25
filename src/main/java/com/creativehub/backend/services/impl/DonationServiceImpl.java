@@ -34,13 +34,13 @@ public class DonationServiceImpl implements DonationService {
 	private final PaypalService paypalService;
 	@Value("${users.url}")
 	public String urlUsers;
-	@Value("${payments.url}")
-	public String urlPayments;
+	@Value("${gateway.url}")
+	private String gatewayUrl;
 
 	@Override
 	public String saveDonation(DonationDto donationDto) {
 		UserDto userCreator = RestService(donationDto.getIdCreator());
-		if (userCreator != null && userCreator.getCreator() == null) return "redirect :/";
+		if (userCreator == null || userCreator.getCreator() == null) return "redirect:/";
 		try {
 			Payment payment = paypalService.createPayment(donationDto.getImporto(), userCreator.getCreator().getPaymentEmail(), donationDto.getCurrency().getCurrencyCode(), "paypal", "SALE", "",
 					gatewayUrl + CANCEL_URL, gatewayUrl + SUCCESS_URL);
@@ -53,7 +53,7 @@ public class DonationServiceImpl implements DonationService {
 		} catch (PayPalRESTException e) {
 			e.printStackTrace();
 		}
-		return "redirect :/";
+		return "redirect:/";
 	}
 
 	@Override
