@@ -22,6 +22,7 @@ $env:COMPOSE_DOCKER_CLI_BUILD=1; $env:DOCKER_BUILDKIT=1; docker-compose up --bui
 
 ```shell
 okteto kubeconfig
+export GATEWAY_URL=https://api-gateway-acontenti.cloud.okteto.net
 for f in ./orchestration/*.yaml; do cat $f | envsubst | kubectl apply -f -; done
 ```
 
