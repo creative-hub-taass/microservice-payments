@@ -14,22 +14,22 @@ import java.util.UUID;
 @Entity
 @Table(name = "table_order")
 public class Order {
-    @Id
-    @GeneratedValue
-    private UUID id;
+	@Id
+	@GeneratedValue
+	private UUID id;
 
-    @Column(name = "id_artwork", nullable = false)
-    private UUID idArtwork;
+	@Column(name = "id_artwork", nullable = false)
+	private UUID idArtwork;
 
-    @Column(name = "id_user", nullable = false)
-    private UUID idUser;
+	@Column(name = "id_user", nullable = false)
+	private UUID idUser;
 
-    @Column(name = "importo", nullable = false)
-    private Double importo;
+	@Column(name = "importo", nullable = false)
+	private Double importo;
 
-    @Column(name = "destination_address", nullable = false)
-    private String destinationAddress;
+	@Column(name = "destination_address", nullable = false)
+	private String destinationAddress;
 
-    @Column(name = "timestamp", nullable = false)
-    private Timestamp timestamp;
+	@Column(name = "timestamp", nullable = false)
+	private Timestamp timestamp;
 }

@@ -24,90 +24,81 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DonationServiceImpl implements DonationService {
+	private static final HashMap<String, Donation> donation_map = new HashMap<>();
+	@Value("${path.success}")
+	public static String SUCCESS_URL;
+	@Value("${path.cancel}")
+	public static String CANCEL_URL;
+	private final DonationRepository donationRepository;
+	private final DonationMapper donationMapper;
+	private final PaypalService paypalService;
+	@Value("${users.url}")
+	public String urlUsers;
+	@Value("${gateway.url}")
+	private String gatewayUrl;
 
-    private final DonationRepository donationRepository;
-    private final DonationMapper donationMapper;
-    private final PaypalService paypalService;
-    @Value("${path.success}")
-    public static String SUCCESS_URL;
-    @Value("${path.cancel}")
-    public static String CANCEL_URL;
+	@Override
+	public String saveDonation(DonationDto donationDto) {
+		UserDto userCreator = RestService(donationDto.getIdCreator());
+		if (userCreator == null || userCreator.getCreator() == null) return "redirect:/";
+		try {
+			Payment payment = paypalService.createPayment(donationDto.getImporto(), userCreator.getCreator().getPaymentEmail(), donationDto.getCurrency().getCurrencyCode(), "paypal", "SALE", "",
+					gatewayUrl + CANCEL_URL, gatewayUrl + SUCCESS_URL);
+			for (Links link : payment.getLinks()) {
+				if (link.getRel().equals("approval_url")) {
+					donation_map.put(payment.getId(), donationMapper.donationDtoToDonation(donationDto));
+					return "redirect:" + link.getHref();
+				}
+			}
+		} catch (PayPalRESTException e) {
+			e.printStackTrace();
+		}
+		return "redirect:/";
+	}
 
-    @Value("${users.url}")
-    public String urlUsers;
-    @Value("${payments.url}")
-    public String urlPayments;
+	@Override
+	public String successAcquire(String paymentId, String payerId) {
+		try {
+			Payment payment = paypalService.executePayment(paymentId, payerId);
+			System.out.println(payment.toJSON());
+			if (payment.getState().equals("approved")) {
+				donationRepository.save(donation_map.get(paymentId));
+				donation_map.remove(paymentId);
+				return "success";
+			}
+		} catch (PayPalRESTException e) {
+			System.out.println(e.getMessage());
+		}
+		return "redirect:/";
+	}
 
-    private static final HashMap<String,Donation> donation_map = new HashMap<>();
+	private UserDto RestService(UUID id) {
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+		HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+		ResponseEntity<UserDto> result = restTemplate.exchange(urlUsers + "/api/v1/auth/users/" + id, HttpMethod.GET, entity, UserDto.class);
+		return result.getBody();
+	}
 
-    @Override
-    public String saveDonation(DonationDto donationDto) {
-        UserDto userCreator = RestService(donationDto.getIdCreator());
+	@Override
+	public List<DonationDto> getAllDonations(UUID id) {
+		return donationRepository.findAll().stream().map(donationMapper::donationToDonationDto).collect(Collectors.toList());
+	}
 
-        if(userCreator!=null && userCreator.getCreator()==null) return "redirect :/";
+	@Override
+	public Optional<DonationDto> findDonationById(UUID id) {
+		return donationRepository.findById(id).map(donationMapper::donationToDonationDto);
+	}
 
-        try {
-            Payment payment = paypalService.createPayment(donationDto.getImporto(),userCreator.getCreator().getPaymentEmail(),donationDto.getCurrency().getCurrencyCode(),"paypal","SALE","",
-                    urlPayments+CANCEL_URL,urlPayments+SUCCESS_URL);
-            for(Links link:payment.getLinks()){
-                if(link.getRel().equals("approval_url")){
-                    donation_map.put(payment.getId(),donationMapper.donationDtoToDonation(donationDto));
-                    return "redirect:"+link.getHref();
-                }
-            }
-        }catch (PayPalRESTException e){
-            e.printStackTrace();
-        }
-        return "redirect :/";
-    }
+	@Override
+	public void updateDonation(UUID id, DonationDto donationDto) {
+		donationRepository.findById(id).ifPresent(donation -> donationMapper.updateDonationFromDonationDto(donationDto, donation));
+	}
 
-    @Override
-    public String successAcquire(String paymentId, String payerId) {
-        try{
-
-            Payment payment = paypalService.executePayment(paymentId, payerId);
-            System.out.println(payment.toJSON());
-
-            if(payment.getState().equals("approved")){
-                donationRepository.save(donation_map.get(paymentId));
-                donation_map.remove(paymentId);
-                return "success";
-            }
-        } catch(PayPalRESTException e){
-            System.out.println(e.getMessage());
-        }
-        return "redirect:/";
-    }
-
-    private UserDto RestService(UUID id) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
-
-        HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-        ResponseEntity<UserDto> result =
-                restTemplate.exchange(urlUsers+"/api/v1/auth/users/"+id, HttpMethod.GET, entity, UserDto.class);
-        return result.getBody();
-    }
-
-    @Override
-    public List<DonationDto> getAllDonations(UUID id) {
-        return donationRepository.findAll().stream().map(donationMapper::donationToDonationDto).collect(Collectors.toList());
-    }
-
-    @Override
-    public Optional<DonationDto> findDonationById(UUID id) {
-        return donationRepository.findById(id).map(donationMapper::donationToDonationDto);
-    }
-
-    @Override
-    public void updateDonation(UUID id, DonationDto donationDto) {
-        donationRepository.findById(id).ifPresent(donation -> donationMapper.updateDonationFromDonationDto(donationDto,donation));
-    }
-
-    @Override
-    public void deleteDonationById(UUID id) {
-        donationRepository.findById(id).ifPresent(donationRepository::delete);
-    }
+	@Override
+	public void deleteDonationById(UUID id) {
+		donationRepository.findById(id).ifPresent(donationRepository::delete);
+	}
 }
