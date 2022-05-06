@@ -26,9 +26,9 @@ import java.util.stream.Collectors;
 public class DonationServiceImpl implements DonationService {
 	private static final HashMap<String, Donation> donation_map = new HashMap<>();
 	@Value("${path.success}")
-	public static String SUCCESS_URL;
+	public String SUCCESS_URL;
 	@Value("${path.cancel}")
-	public static String CANCEL_URL;
+	public String CANCEL_URL;
 	private final DonationRepository donationRepository;
 	private final DonationMapper donationMapper;
 	private final PaypalService paypalService;

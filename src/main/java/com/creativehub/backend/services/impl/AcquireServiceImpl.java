@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,9 +26,9 @@ import java.util.stream.Collectors;
 public class AcquireServiceImpl implements AcquireService {
 	private static final HashMap<String, Order> order_map = new HashMap<>();
 	@Value("${path.success}")
-	public static String SUCCESS_URL;
+	public String SUCCESS_URL;
 	@Value("${path.cancel}")
-	public static String CANCEL_URL;
+	public String CANCEL_URL;
 	private final OrderRepository orderRepository;
 	private final OrderMapper orderMapper;
 	private final PaypalService paypalService;
@@ -37,6 +36,7 @@ public class AcquireServiceImpl implements AcquireService {
 	public String urlPublications;
 	@Value("${gateway.url}")
 	private String gatewayUrl;
+
 
 	@Override
 	public String acquireArtwork(OrderDto orderDto) {
@@ -79,6 +79,7 @@ public class AcquireServiceImpl implements AcquireService {
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 		headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 		HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
+
 		ResponseEntity<ArtworkDto> result =
 				restTemplate.exchange(urlPublications + "/api/v1/publications/-/artworks/" + id, HttpMethod.GET, entity, ArtworkDto.class);
 		return result.getBody();
