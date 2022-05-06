@@ -41,7 +41,6 @@ public class AcquireServiceImpl implements AcquireService {
 	@Override
 	public String acquireArtwork(OrderDto orderDto) {
 		ArtworkDto artwork = RestService(orderDto.getIdArtwork());
-		System.out.println(artwork);
 		if (artwork == null || !artwork.getOnSale()) return "redirect:/";
 		try {
 			Payment payment = paypalService.createPayment(orderDto.getImporto(), artwork.getPaymentEmail(), artwork.getCurrency().getCurrencyCode(), "paypal", "SALE", "",
@@ -83,7 +82,6 @@ public class AcquireServiceImpl implements AcquireService {
 
 		ResponseEntity<ArtworkDto> result =
 				restTemplate.exchange(urlPublications + "/api/v1/publications/-/artworks/" + id, HttpMethod.GET, entity, ArtworkDto.class);
-		System.out.println(result.getStatusCode());
 		return result.getBody();
 	}
 
