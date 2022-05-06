@@ -8,11 +8,11 @@ import java.util.UUID;
 
 @Data
 public class DonationDto {
-	private final UUID id;
-	private final UUID idSender;
-	private final UUID idCreator;
-	private final Double importo;
-	private final String message;
-	private final Currency currency;
-	private final Timestamp timestamp;
+	private UUID id;
+	private UUID idSender;
+	private UUID idCreator;
+	private Double importo;
+	private String message;
+	private Currency currency;
+	private Timestamp timestamp;
 }
