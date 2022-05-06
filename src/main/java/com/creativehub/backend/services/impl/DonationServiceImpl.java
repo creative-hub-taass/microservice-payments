@@ -78,7 +78,7 @@ public class DonationServiceImpl implements DonationService {
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 		headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 		HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-		ResponseEntity<UserDto> result = restTemplate.exchange(urlUsers + "/api/v1/auth/users/" + id, HttpMethod.GET, entity, UserDto.class);
+		ResponseEntity<UserDto> result = restTemplate.exchange(urlUsers + "/api/v1/users/" + id, HttpMethod.GET, entity, UserDto.class);
 		return result.getBody();
 	}
 
