@@ -54,7 +54,7 @@ public class AcquireServiceImpl implements AcquireService {
 		} catch (PayPalRESTException e) {
 			e.printStackTrace();
 		}
-		return "Success";
+		return "cancel";
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class AcquireServiceImpl implements AcquireService {
 		} catch (PayPalRESTException e) {
 			System.out.println(e.getMessage());
 		}
-		return "redirect:/";
+		return "cancel";
 	}
 
 	private ArtworkDto RestService(UUID id) {
