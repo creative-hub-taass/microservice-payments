@@ -31,13 +31,13 @@ public class PaymentsController {
 	}
 
 	//pagamento fallito
-	@GetMapping("/cancel")
+	@GetMapping("/-/cancel")
 	public String cancelPay() {
 		return "cancel";
 	}
 
 	//pagamento avvenuto con successo
-	@GetMapping("/success")
+	@GetMapping("/-/success")
 	public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) {
 		return acquireService.successAcquire(paymentId, payerId);
 	}
