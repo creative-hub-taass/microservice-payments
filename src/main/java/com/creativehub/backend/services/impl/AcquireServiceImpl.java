@@ -54,7 +54,7 @@ public class AcquireServiceImpl implements AcquireService {
 		} catch (PayPalRESTException e) {
 			e.printStackTrace();
 		}
-		return "redirect:/";
+		return "Success";
 	}
 
 	@Override
