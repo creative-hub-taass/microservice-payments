@@ -52,7 +52,7 @@ public class AcquireServiceImpl implements AcquireService {
 				}
 			}
 		} catch (PayPalRESTException e) {
-			e.printStackTrace();
+			return e.printStackTrace().toString();
 		}
 		return "cancel";
 	}
@@ -69,6 +69,7 @@ public class AcquireServiceImpl implements AcquireService {
 			}
 		} catch (PayPalRESTException e) {
 			System.out.println(e.getMessage());
+			return e.printStackTrace().toString();
 		}
 		return "cancel";
 	}
