@@ -7,13 +7,12 @@ import com.creativehub.backend.services.AcquireService;
 import com.creativehub.backend.services.dto.ArtworkDto;
 import com.creativehub.backend.services.dto.OrderDto;
 import com.creativehub.backend.services.mapper.OrderMapper;
+import com.creativehub.backend.util.buildResponse;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class AcquireServiceImpl implements AcquireService {
 	private static final HashMap<String, Order> order_map = new HashMap<>();
 	@Value("${path.success}")
@@ -41,7 +39,10 @@ public class AcquireServiceImpl implements AcquireService {
 	@Override
 	public String acquireArtwork(OrderDto orderDto) {
 		ArtworkDto artwork = RestService(orderDto.getIdArtwork());
-		if (artwork == null || !artwork.getOnSale()) return "redirect:/";
+		if (artwork == null || !artwork.getOnSale()){
+			buildResponse rsp = new buildResponse("failed", "artwork not for sale or didn't found it");
+			return rsp.getHTML();
+		}
 		try {
 			Payment payment = paypalService.createPayment(orderDto.getImporto(), artwork.getPaymentEmail(), artwork.getCurrency().getCurrencyCode(), "paypal", "SALE", "",
 					gatewayUrl + CANCEL_URL, gatewayUrl + SUCCESS_URL);
@@ -52,10 +53,11 @@ public class AcquireServiceImpl implements AcquireService {
 				}
 			}
 		} catch (PayPalRESTException e) {
-			System.out.println(e.getMessage());
-			return e.getMessage();
+			buildResponse rsp = new buildResponse("failed", e.getMessage());
+			return rsp.getHTML();
 		}
-		return "cancel";
+		buildResponse rsp = new buildResponse("failed", "An error was found in acquiring the artwork");
+		return rsp.getHTML();
 	}
 
 	@Override
@@ -66,13 +68,15 @@ public class AcquireServiceImpl implements AcquireService {
 			if (payment.getState().equals("approved")) {
 				orderRepository.save(order_map.get(paymentId));
 				order_map.remove(paymentId);
-				return "success";
+				buildResponse rsp = new buildResponse("was successful", "");
+				return rsp.getHTML();
 			}
 		} catch (PayPalRESTException e) {
-			System.out.println(e.getMessage());
-			return e.getMessage();
+			buildResponse rsp = new buildResponse("failed", e.getMessage());
+			return rsp.getHTML();
 		}
-		return "cancel";
+		buildResponse rsp = new buildResponse("failed", "An error was found during the purchase.");
+		return rsp.getHTML();
 	}
 
 	private ArtworkDto RestService(UUID id) {

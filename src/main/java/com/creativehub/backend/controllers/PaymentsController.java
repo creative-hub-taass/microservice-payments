@@ -6,6 +6,7 @@ import com.creativehub.backend.services.dto.DonationDto;
 import com.creativehub.backend.services.dto.OrderDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import com.creativehub.backend.util.buildResponse;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class PaymentsController {
 	private final DonationService donationService;
 	private final AcquireService acquireService;
+
 
 	// Acquista_opera
 	@PostMapping("/buyartwork")
@@ -33,7 +35,8 @@ public class PaymentsController {
 	//pagamento fallito
 	@GetMapping("/-/cancel")
 	public String cancelPay() {
-		return "cancel";
+		buildResponse rsp = new buildResponse("failed","");
+		return rsp.getHTML();
 	}
 
 	//pagamento avvenuto con successo
