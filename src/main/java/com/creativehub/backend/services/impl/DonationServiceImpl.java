@@ -6,13 +6,12 @@ import com.creativehub.backend.services.DonationService;
 import com.creativehub.backend.services.dto.DonationDto;
 import com.creativehub.backend.services.dto.UserDto;
 import com.creativehub.backend.services.mapper.DonationMapper;
+import com.creativehub.backend.util.buildResponse;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class DonationServiceImpl implements DonationService {
 	private static final HashMap<String, Donation> donation_map = new HashMap<>();
 	@Value("${path.success}")
@@ -37,10 +35,14 @@ public class DonationServiceImpl implements DonationService {
 	@Value("${gateway.url}")
 	private String gatewayUrl;
 
+
 	@Override
 	public String saveDonation(DonationDto donationDto) {
 		UserDto userCreator = RestService(donationDto.getIdCreator());
-		if (userCreator == null || userCreator.getCreator() == null) return "redirect:/";
+		if (userCreator == null || userCreator.getCreator() == null) {
+			buildResponse rsp = new buildResponse("failed", "Didn't find creator");
+			return rsp.getHTML();
+		}
 		try {
 			Payment payment = paypalService.createPayment(donationDto.getImporto(), userCreator.getCreator().getPaymentEmail(), donationDto.getCurrency().getCurrencyCode(), "paypal", "SALE", "",
 					gatewayUrl + CANCEL_URL, gatewayUrl + SUCCESS_URL);
@@ -51,9 +53,11 @@ public class DonationServiceImpl implements DonationService {
 				}
 			}
 		} catch (PayPalRESTException e) {
-			e.printStackTrace();
+			buildResponse rsp = new buildResponse("failed", e.getMessage());
+			return rsp.getHTML();
 		}
-		return "redirect:/";
+		buildResponse rsp = new buildResponse("failed", "An error was found in acquiring the creator");
+		return rsp.getHTML();
 	}
 
 	@Override
@@ -64,12 +68,15 @@ public class DonationServiceImpl implements DonationService {
 			if (payment.getState().equals("approved")) {
 				donationRepository.save(donation_map.get(paymentId));
 				donation_map.remove(paymentId);
-				return "success";
+				buildResponse rsp = new buildResponse("was successful", "");
+				return rsp.getHTML();
 			}
 		} catch (PayPalRESTException e) {
-			System.out.println(e.getMessage());
+			buildResponse rsp = new buildResponse("failed", e.getMessage());
+			return rsp.getHTML();
 		}
-		return "redirect:/";
+		buildResponse rsp = new buildResponse("failed", "An error was found during the purchase.");
+		return rsp.getHTML();
 	}
 
 	private UserDto RestService(UUID id) {

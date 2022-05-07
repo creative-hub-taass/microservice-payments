@@ -33,3 +33,15 @@ okteto kubeconfig
 $env:GATEWAY_URL = "https://api-gateway-acontenti.cloud.okteto.net"
 Resolve-Path .\orchestration\*.yaml | Select -ExpandProperty Path | %{Get-Content $_ | envsubst | kubectl apply -f -}
 ```
+
+Need to change urlClient on buildResponse in case of domain switch.
+
+## Account of paypal
+e-mail: sb-4rrjm15387501@business.example.com (Business)
+password: creativehub
+e-mail: sb-wl4ht15293281@personal.example.com (Personal)
+password: creativehub
+e-mail: sb-npsne15613413@business.example.com (Business)
+password: creativehub
+
+
