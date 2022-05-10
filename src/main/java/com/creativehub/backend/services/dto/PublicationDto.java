@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PublicationDto extends Comparable<PublicationDto> {
-    @Override
-    default int compareTo(PublicationDto publication) {
-        return (int) (getTime() - publication.getTime());
-    }
+	@Override
+	default int compareTo(PublicationDto publication) {
+		return (int) (getTime() - publication.getTime());
+	}
 
-    long getTime();
+	long getTime();
 
-    UUID getId();
+	UUID getId();
 
-    List<? extends CreationDto> getCreations();
+	List<? extends CreationDto> getCreations();
 }

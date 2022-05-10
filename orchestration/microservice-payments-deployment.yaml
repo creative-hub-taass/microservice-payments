@@ -19,6 +19,8 @@ spec:
         - env:
             - name: API_GATEWAY_URL
               value: $GATEWAY_URL
+            - name: CLIENT_URL
+              value: $CLIENT_URL
             - name: PAYPAL_MODE
               value: sandbox
             - name: PAYPAL_CLIENT_ID

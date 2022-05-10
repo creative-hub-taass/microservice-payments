@@ -6,7 +6,7 @@ import com.creativehub.backend.services.DonationService;
 import com.creativehub.backend.services.dto.DonationDto;
 import com.creativehub.backend.services.dto.UserDto;
 import com.creativehub.backend.services.mapper.DonationMapper;
-import com.creativehub.backend.util.buildResponse;
+import com.creativehub.backend.util.Utils;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
@@ -23,25 +23,25 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DonationServiceImpl implements DonationService {
 	private static final HashMap<String, Donation> donation_map = new HashMap<>();
+	private final DonationRepository donationRepository;
+	private final DonationMapper donationMapper;
+	private final PaypalService paypalService;
 	@Value("${path.success}")
 	public String SUCCESS_URL;
 	@Value("${path.cancel}")
 	public String CANCEL_URL;
-	private final DonationRepository donationRepository;
-	private final DonationMapper donationMapper;
-	private final PaypalService paypalService;
 	@Value("${users.url}")
 	public String urlUsers;
 	@Value("${gateway.url}")
 	private String gatewayUrl;
-
+	@Value("${client.url}")
+	private String clientUrl;
 
 	@Override
 	public String saveDonation(DonationDto donationDto) {
-		UserDto userCreator = RestService(donationDto.getIdCreator());
+		UserDto userCreator = fetchUser(donationDto.getIdCreator());
 		if (userCreator == null || userCreator.getCreator() == null) {
-			buildResponse rsp = new buildResponse("failed", "Didn't find creator");
-			return rsp.getHTML();
+			return Utils.buildResponseFailed(clientUrl, "Didn't find creator");
 		}
 		try {
 			Payment payment = paypalService.createPayment(donationDto.getImporto(), userCreator.getCreator().getPaymentEmail(), donationDto.getCurrency().getCurrencyCode(), "paypal", "SALE", "",
@@ -53,11 +53,9 @@ public class DonationServiceImpl implements DonationService {
 				}
 			}
 		} catch (PayPalRESTException e) {
-			buildResponse rsp = new buildResponse("failed", e.getMessage());
-			return rsp.getHTML();
+			return Utils.buildResponseFailed(clientUrl, e.getMessage());
 		}
-		buildResponse rsp = new buildResponse("failed", "An error was found in acquiring the creator");
-		return rsp.getHTML();
+		return Utils.buildResponseFailed(clientUrl, "An error was found in acquiring the creator");
 	}
 
 	@Override
@@ -68,24 +66,21 @@ public class DonationServiceImpl implements DonationService {
 			if (payment.getState().equals("approved")) {
 				donationRepository.save(donation_map.get(paymentId));
 				donation_map.remove(paymentId);
-				buildResponse rsp = new buildResponse("was successful", "");
-				return rsp.getHTML();
+				return Utils.buildResponseSuccessful(clientUrl);
 			}
 		} catch (PayPalRESTException e) {
-			buildResponse rsp = new buildResponse("failed", e.getMessage());
-			return rsp.getHTML();
+			return Utils.buildResponseFailed(clientUrl, e.getMessage());
 		}
-		buildResponse rsp = new buildResponse("failed", "An error was found during the purchase.");
-		return rsp.getHTML();
+		return Utils.buildResponseFailed(clientUrl, "An error was found during the purchase.");
 	}
 
-	private UserDto RestService(UUID id) {
+	private UserDto fetchUser(UUID userId) {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 		headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 		HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-		ResponseEntity<UserDto> result = restTemplate.exchange(urlUsers + "/api/v1/users/" + id, HttpMethod.GET, entity, UserDto.class);
+		ResponseEntity<UserDto> result = restTemplate.exchange(urlUsers + "/api/v1/users/" + userId, HttpMethod.GET, entity, UserDto.class);
 		return result.getBody();
 	}
 

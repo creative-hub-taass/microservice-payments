@@ -1,6 +1,5 @@
 package com.creativehub.backend.services.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -10,10 +9,8 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoField;
 import java.util.*;
 
-
 @Data
 public class ArtworkDto implements Serializable, PublicationDto {
-
 	private UUID id;
 	private Instant timestamp;
 	private Instant lastUpdate;
@@ -33,11 +30,8 @@ public class ArtworkDto implements Serializable, PublicationDto {
 	private String paymentEmail;
 	private Integer availableCopies;
 
-
 	@Override
 	public long getTime() {
 		return creationDateTime.getLong(ChronoField.INSTANT_SECONDS);
 	}
-
-
 }

@@ -23,6 +23,7 @@ $env:COMPOSE_DOCKER_CLI_BUILD=1; $env:DOCKER_BUILDKIT=1; docker-compose up --bui
 ```shell
 okteto kubeconfig
 export GATEWAY_URL=https://api-gateway-acontenti.cloud.okteto.net
+export CLIENT_URL=https://creative-hub-client-taass-acontenti.cloud.okteto.net
 for f in ./orchestration/*.yaml; do cat $f | envsubst | kubectl apply -f -; done
 ```
 
@@ -31,17 +32,15 @@ for f in ./orchestration/*.yaml; do cat $f | envsubst | kubectl apply -f -; done
 ```powershell
 okteto kubeconfig
 $env:GATEWAY_URL = "https://api-gateway-acontenti.cloud.okteto.net"
+$env:CLIENT_URL = "https://creative-hub-client-taass-acontenti.cloud.okteto.net"
 Resolve-Path .\orchestration\*.yaml | Select -ExpandProperty Path | %{Get-Content $_ | envsubst | kubectl apply -f -}
 ```
 
-Need to change urlClient on buildResponse in case of domain switch.
+## Paypal account
 
-## Account of paypal
-e-mail: sb-4rrjm15387501@business.example.com (Business)
-password: creativehub
-e-mail: sb-wl4ht15293281@personal.example.com (Personal)
-password: creativehub
-e-mail: sb-npsne15613413@business.example.com (Business)
-password: creativehub
-
-
+* **e-mail**: sb-4rrjm15387501@business.example.com (Business)  
+  **password**: creativehub
+* **e-mail**: sb-wl4ht15293281@personal.example.com (Personal)  
+  **password**: creativehub
+* **e-mail**: sb-npsne15613413@business.example.com (Business)  
+  **password**: creativehub
