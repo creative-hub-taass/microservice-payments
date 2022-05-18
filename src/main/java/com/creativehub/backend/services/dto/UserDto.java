@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Data
 public class UserDto implements Serializable {
-	private Long id;
+	private UUID id;
 	private String username;
 	private String nickname;
 	private String email;
