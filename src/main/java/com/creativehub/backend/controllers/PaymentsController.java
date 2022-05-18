@@ -46,6 +46,12 @@ public class PaymentsController {
 		return acquireService.successAcquire(paymentId, payerId);
 	}
 
+	//pagamento avvenuto con successo
+	@GetMapping("/-/success")
+	public String successPayDonation(@RequestParam("paymentId") String paymentId, @RequestParam("token") String token, @RequestParam("PayerID") String payerId) {
+		return donationService.successAcquire(paymentId, payerId);
+	}
+
 	//restituisci_donazioni
 	@GetMapping("/donations/{id}")
 	public List<DonationDto> getDonations(@PathVariable UUID id) {
