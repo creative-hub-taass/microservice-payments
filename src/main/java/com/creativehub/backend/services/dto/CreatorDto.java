@@ -8,7 +8,7 @@ import java.sql.Date;
 
 @Data
 public class CreatorDto implements Serializable {
-	private Long id;
+	private UUID id;
 	private String name;
 	private String surname;
 	private Date birthDate;
