@@ -26,7 +26,7 @@ public class DonationServiceImpl implements DonationService {
 	private final DonationRepository donationRepository;
 	private final DonationMapper donationMapper;
 	private final PaypalService paypalService;
-	@Value("${path.success}")
+	@Value("${path.success.donation}")
 	public String SUCCESS_URL;
 	@Value("${path.cancel}")
 	public String CANCEL_URL;
@@ -62,7 +62,6 @@ public class DonationServiceImpl implements DonationService {
 	public String successAcquire(String paymentId, String payerId) {
 		try {
 			Payment payment = paypalService.executePayment(paymentId, payerId);
-			System.out.println(payment.toJSON());
 			if (payment.getState().equals("approved")) {
 				donationRepository.save(donation_map.get(paymentId));
 				donation_map.remove(paymentId);
@@ -78,6 +77,7 @@ public class DonationServiceImpl implements DonationService {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+		headers.add("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI4NDg0MDMwMy0zYTRiLTRmMTctYTIyYi04Y2Q1YjVjZDczZDIiLCJleHAiOjE2NDg5OTkxODMsImlhdCI6MTY0ODk5ODU4Mywicm9sZXMiOlsiVVNFUiJdfQ.OF0leRjcb3AS4IGuuzXezTOD8U97CoqWZUK3VLp-phI");
 		headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 		HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
 		ResponseEntity<UserDto> result = restTemplate.exchange(urlUsers + "/api/v1/users/" + userId, HttpMethod.GET, entity, UserDto.class);
