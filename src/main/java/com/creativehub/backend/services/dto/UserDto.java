@@ -8,12 +8,12 @@ import java.util.Set;
 
 @Data
 public class UserDto implements Serializable {
-	private Long id;
+	private UUID id;
 	private String username;
 	private String nickname;
 	private String email;
 	private Role role;
 	private CreatorDto creator;
-	private Set<Long> inspirerIds;
-	private Set<Long> fanIds;
+	private Set<UUID> inspirerIds;
+	private Set<UUID> fanIds;
 }

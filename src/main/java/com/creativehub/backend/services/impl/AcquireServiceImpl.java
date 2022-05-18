@@ -7,7 +7,7 @@ import com.creativehub.backend.services.AcquireService;
 import com.creativehub.backend.services.dto.ArtworkDto;
 import com.creativehub.backend.services.dto.OrderDto;
 import com.creativehub.backend.services.mapper.OrderMapper;
-import com.creativehub.backend.util.buildResponse;
+import com.creativehub.backend.util.Utils;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,25 +24,27 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AcquireServiceImpl implements AcquireService {
 	private static final HashMap<String, Order> order_map = new HashMap<>();
+	private final OrderRepository orderRepository;
+	private final OrderMapper orderMapper;
+	private final PaypalService paypalService;
 	@Value("${path.success}")
 	public String SUCCESS_URL;
 	@Value("${path.cancel}")
 	public String CANCEL_URL;
-	private final OrderRepository orderRepository;
-	private final OrderMapper orderMapper;
-	private final PaypalService paypalService;
 	@Value("${publications.url}")
 	public String urlPublications;
 	@Value("${gateway.url}")
 	private String gatewayUrl;
-
+	@Value("${client.url}")
+	private String clientUrl;
 
 	@Override
 	public String acquireArtwork(OrderDto orderDto) {
-		ArtworkDto artwork = RestService(orderDto.getIdArtwork());
-		if (artwork == null || !artwork.getOnSale()){
-			buildResponse rsp = new buildResponse("failed", "artwork not for sale or didn't found it");
-			return rsp.getHTML();
+		ArtworkDto artwork = fetchArtwork(orderDto.getIdArtwork());
+		if (artwork == null) {
+			return Utils.buildResponseFailed(clientUrl, "Artwork not found");
+		} else if (!artwork.getOnSale()) {
+			return Utils.buildResponseFailed(clientUrl, "Artwork not for sale");
 		}
 		try {
 			Payment payment = paypalService.createPayment(orderDto.getImporto(), artwork.getPaymentEmail(), artwork.getCurrency().getCurrencyCode(), "paypal", "SALE", "",
@@ -53,11 +56,9 @@ public class AcquireServiceImpl implements AcquireService {
 				}
 			}
 		} catch (PayPalRESTException e) {
-			buildResponse rsp = new buildResponse("failed", e.getMessage());
-			return rsp.getHTML();
+			return Utils.buildResponseFailed(clientUrl, e.getMessage());
 		}
-		buildResponse rsp = new buildResponse("failed", "An error was found in acquiring the artwork");
-		return rsp.getHTML();
+		return Utils.buildResponseFailed(clientUrl, "An error was found in acquiring the artwork");
 	}
 
 	@Override
@@ -68,24 +69,20 @@ public class AcquireServiceImpl implements AcquireService {
 			if (payment.getState().equals("approved")) {
 				orderRepository.save(order_map.get(paymentId));
 				order_map.remove(paymentId);
-				buildResponse rsp = new buildResponse("was successful", "");
-				return rsp.getHTML();
+				return Utils.buildResponseSuccessful(clientUrl);
 			}
 		} catch (PayPalRESTException e) {
-			buildResponse rsp = new buildResponse("failed", e.getMessage());
-			return rsp.getHTML();
+			return Utils.buildResponseFailed(clientUrl, e.getMessage());
 		}
-		buildResponse rsp = new buildResponse("failed", "An error was found during the purchase.");
-		return rsp.getHTML();
+		return Utils.buildResponseFailed(clientUrl, "An error was found during the purchase.");
 	}
 
-	private ArtworkDto RestService(UUID id) {
+	private ArtworkDto fetchArtwork(UUID id) {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 		headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
 		HttpEntity<String> entity = new HttpEntity<>("parameters", headers);
-
 		ResponseEntity<ArtworkDto> result =
 				restTemplate.exchange(urlPublications + "/api/v1/publications/-/artworks/" + id, HttpMethod.GET, entity, ArtworkDto.class);
 		return result.getBody();
