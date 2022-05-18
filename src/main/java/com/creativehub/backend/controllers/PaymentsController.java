@@ -5,6 +5,7 @@ import com.creativehub.backend.services.DonationService;
 import com.creativehub.backend.services.dto.DonationDto;
 import com.creativehub.backend.services.dto.OrderDto;
 import com.creativehub.backend.util.Utils;
+import io.micrometer.core.lang.Nullable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -42,14 +43,8 @@ public class PaymentsController {
 
 	//pagamento avvenuto con successo
 	@GetMapping("/-/success")
-	public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam("PayerID") String payerId) {
+	public String successPay(@RequestParam("paymentId") String paymentId, @RequestParam(value = "token", required = false) String token, @RequestParam("PayerID") String payerId) {
 		return acquireService.successAcquire(paymentId, payerId);
-	}
-
-	//pagamento avvenuto con successo
-	@GetMapping("/-/success")
-	public String successPayDonation(@RequestParam("paymentId") String paymentId, @RequestParam("token") String token, @RequestParam("PayerID") String payerId) {
-		return donationService.successAcquire(paymentId, payerId);
 	}
 
 	//restituisci_donazioni
