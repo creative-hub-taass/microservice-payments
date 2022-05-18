@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.UUID;
 
 @Data
 public class CreatorDto implements Serializable {
