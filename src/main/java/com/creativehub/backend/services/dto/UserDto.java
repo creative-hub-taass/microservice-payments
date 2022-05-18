@@ -14,6 +14,6 @@ public class UserDto implements Serializable {
 	private String email;
 	private Role role;
 	private CreatorDto creator;
-	private Set<Long> inspirerIds;
-	private Set<Long> fanIds;
+	private Set<UUID> inspirerIds;
+	private Set<UUID> fanIds;
 }
