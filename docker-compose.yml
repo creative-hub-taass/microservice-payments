@@ -22,6 +22,6 @@ services:
       - DB_PASSWORD=postgres
       - PAYPAL_MODE=sandbox
       - PAYPAL_CLIENT_ID=ASa3PDrzVCqEFVY0xB0L0YgeiIezvaaHToCzaE6j3z1_3XRYtnSQifbrJQ9UfA4k-7sh4ew5SbdeUQ-3
-      - PAYPAL_CLIENT_SECRET=EEdnAETnP0n4eRCRg0tbISZZDJBGlLSwC24GWJUULL0AElo8-P4C78iqTnAAus4TKumvFiLF-sYOnBLE
+      - PAYPAL_CLIENT_SECRET=EKBkAVJLlUYQAmxkGNN3nsb6E_KDIfe2Coy8yIy9lcqZ4KRL3zVfAOX6cOUg5sCLS3DHh1m7uP1LWe6x
     depends_on:
       - db-payments
