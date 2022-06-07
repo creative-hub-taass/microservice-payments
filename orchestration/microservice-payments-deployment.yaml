@@ -26,7 +26,7 @@ spec:
             - name: PAYPAL_CLIENT_ID
               value: ASa3PDrzVCqEFVY0xB0L0YgeiIezvaaHToCzaE6j3z1_3XRYtnSQifbrJQ9UfA4k-7sh4ew5SbdeUQ-3
             - name: PAYPAL_CLIENT_SECRET
-              value: EEdnAETnP0n4eRCRg0tbISZZDJBGlLSwC24GWJUULL0AElo8-P4C78iqTnAAus4TKumvFiLF-sYOnBLE
+              value: EKBkAVJLlUYQAmxkGNN3nsb6E_KDIfe2Coy8yIy9lcqZ4KRL3zVfAOX6cOUg5sCLS3DHh1m7uP1LWe6x
             - name: DB_HOST
               value: db-payments
             - name: DB_NAME
