@@ -47,6 +47,7 @@ public class PaypalService {
 		redirectUrls.setCancelUrl(cancelUrl);
 		redirectUrls.setReturnUrl(successUrl);
 		payment.setRedirectUrls(redirectUrls);
+		payment.setId(UUID.randomUUID().toString());
 		return payment.create(apiContext);
 	}
 
