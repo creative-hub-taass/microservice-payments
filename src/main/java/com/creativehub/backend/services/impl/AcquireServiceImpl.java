@@ -4,6 +4,7 @@ package com.creativehub.backend.services.impl;
 import com.creativehub.backend.models.Order;
 import com.creativehub.backend.repositories.OrderRepository;
 import com.creativehub.backend.services.AcquireService;
+import com.creativehub.backend.services.dto.ArtworkCreationDto;
 import com.creativehub.backend.services.dto.ArtworkDto;
 import com.creativehub.backend.services.dto.OrderDto;
 import com.creativehub.backend.services.mapper.OrderMapper;
@@ -13,10 +14,13 @@ import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,9 +46,11 @@ public class AcquireServiceImpl implements AcquireService {
 	public String acquireArtwork(OrderDto orderDto) {
 		ArtworkDto artwork = fetchArtwork(orderDto.getIdArtwork());
 		if (artwork == null) {
-			return Utils.buildResponseFailed(clientUrl, "Artwork not found");
+			//return Utils.buildResponseFailed(clientUrl, "Artwork not found");
+			return "Artwork not found";
 		} else if (!artwork.getOnSale()) {
-			return Utils.buildResponseFailed(clientUrl, "Artwork not for sale");
+			//return Utils.buildResponseFailed(clientUrl, "Artwork not for sale");
+			return "Artwork not for sale";
 		}
 		try {
 			Payment payment = paypalService.createPayment(orderDto.getImporto(), artwork.getPaymentEmail(), artwork.getCurrency().getCurrencyCode(), "paypal", "SALE", "",
@@ -56,9 +62,11 @@ public class AcquireServiceImpl implements AcquireService {
 				}
 			}
 		} catch (PayPalRESTException e) {
-			return Utils.buildResponseFailed(clientUrl, e.getMessage());
+			//return Utils.buildResponseFailed(clientUrl, e.getMessage());
+			return e.getMessage();
 		}
-		return Utils.buildResponseFailed(clientUrl, "An error was found in acquiring the artwork");
+		//return Utils.buildResponseFailed(clientUrl, "An error was found in acquiring the artwork");
+		return "An error was found in acquiring the artwork";
 	}
 
 	@Override

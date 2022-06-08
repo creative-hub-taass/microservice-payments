@@ -41,7 +41,8 @@ public class DonationServiceImpl implements DonationService {
 	public String saveDonation(DonationDto donationDto) {
 		UserDto userCreator = fetchUser(donationDto.getIdCreator());
 		if (userCreator == null || userCreator.getCreator() == null) {
-			return Utils.buildResponseFailed(clientUrl, "Didn't find creator");
+			//return Utils.buildResponseFailed(clientUrl, "Didn't find creator");
+			return "Didn't find creator";
 		}
 		try {
 			Payment payment = paypalService.createPayment(donationDto.getImporto(), userCreator.getCreator().getPaymentEmail(), donationDto.getCurrency().getCurrencyCode(), "paypal", "SALE", "",
@@ -53,9 +54,11 @@ public class DonationServiceImpl implements DonationService {
 				}
 			}
 		} catch (PayPalRESTException e) {
-			return Utils.buildResponseFailed(clientUrl, e.getMessage());
+			//return Utils.buildResponseFailed(clientUrl, e.getMessage());
+			return e.getMessage();
 		}
-		return Utils.buildResponseFailed(clientUrl, "An error was found in acquiring the creator");
+		//return Utils.buildResponseFailed(clientUrl, "An error was found in acquiring the creator");
+		return "An error was found in acquiring the creator";
 	}
 
 	@Override

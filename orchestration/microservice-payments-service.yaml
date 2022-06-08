@@ -5,6 +5,7 @@ metadata:
     io.kompose.service: microservice-payments
   name: microservice-payments
 spec:
+  type: LoadBalancer
   ports:
     - name: api
       port: 8080
