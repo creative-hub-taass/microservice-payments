@@ -3,6 +3,7 @@ package com.creativehub.backend.services.dto;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Currency;
 import java.util.UUID;
 
@@ -14,5 +15,5 @@ public class DonationDto {
 	private Double importo;
 	private String message;
 	private Currency currency;
-	private Timestamp timestamp;
+	private Instant timestamp;
 }

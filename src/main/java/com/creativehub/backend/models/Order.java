@@ -1,9 +1,11 @@
 package com.creativehub.backend.models;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -30,6 +32,7 @@ public class Order {
 	@Column(name = "destination_address", nullable = false)
 	private String destinationAddress;
 
-	@Column(name = "timestamp", nullable = false)
-	private Timestamp timestamp;
+	@Column(name = "timestamp", nullable = false, updatable = false)
+	@CreationTimestamp
+	private Instant timestamp;
 }

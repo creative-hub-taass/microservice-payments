@@ -1,9 +1,11 @@
 package com.creativehub.backend.models;
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Currency;
 import java.util.UUID;
 
@@ -34,6 +36,7 @@ public class Donation {
 	@Column(name = "currency")
 	private Currency currency;
 
-	@Column(name = "timestamp", nullable = false)
-	private Timestamp timestamp;
+	@Column(name = "timestamp", nullable = false, updatable = false)
+	@CreationTimestamp
+	private Instant timestamp;
 }
