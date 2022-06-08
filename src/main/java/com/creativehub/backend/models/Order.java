@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Currency;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -35,4 +36,7 @@ public class Order {
 	@Column(name = "timestamp", nullable = false, updatable = false)
 	@CreationTimestamp
 	private Instant timestamp;
+
+	@Column(name = "currency")
+	private Currency currency;
 }
