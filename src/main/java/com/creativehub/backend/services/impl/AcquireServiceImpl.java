@@ -4,7 +4,7 @@ package com.creativehub.backend.services.impl;
 import com.creativehub.backend.models.Order;
 import com.creativehub.backend.repositories.OrderRepository;
 import com.creativehub.backend.services.AcquireService;
-import com.creativehub.backend.services.dto.ArtworkCreationDto;
+import com.creativehub.backend.services.ProducerService;
 import com.creativehub.backend.services.dto.ArtworkDto;
 import com.creativehub.backend.services.dto.OrderDto;
 import com.creativehub.backend.services.mapper.OrderMapper;
@@ -14,13 +14,10 @@ import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +28,7 @@ public class AcquireServiceImpl implements AcquireService {
 	private final OrderRepository orderRepository;
 	private final OrderMapper orderMapper;
 	private final PaypalService paypalService;
+	private final ProducerService producerService;
 	@Value("${path.success.acquire}")
 	public String SUCCESS_URL;
 	@Value("${path.cancel}")
@@ -75,14 +73,20 @@ public class AcquireServiceImpl implements AcquireService {
 			Payment payment = paypalService.executePayment(paymentId, payerId);
 			System.out.println(payment.toJSON());
 			if (payment.getState().equals("approved")) {
-				orderRepository.save(order_map.get(paymentId));
+				Order order = order_map.get(paymentId);
+				orderRepository.save(order);
 				order_map.remove(paymentId);
+				updateBoughtArtwork(order.getIdArtwork());
 				return Utils.buildResponseSuccessful(clientUrl);
 			}
 		} catch (PayPalRESTException e) {
 			return Utils.buildResponseFailed(clientUrl, e.getMessage());
 		}
 		return Utils.buildResponseFailed(clientUrl, "An error was found during the purchase.");
+	}
+
+	private void updateBoughtArtwork(UUID idArtwork) {
+		producerService.sendMessage(idArtwork);
 	}
 
 	private ArtworkDto fetchArtwork(UUID id) {
