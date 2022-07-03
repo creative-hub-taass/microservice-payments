@@ -18,7 +18,7 @@ public class RabbitMQConfig {
 	String username;
 	@Value("${spring.rabbitmq.password}")
 	String password;
-	@Value("${fanout.name}")
+	@Value("${exchange.name}")
 	private String name;
 
 	@Bean
