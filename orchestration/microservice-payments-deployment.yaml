@@ -17,6 +17,14 @@ spec:
     spec:
       containers:
         - env:
+            - name: RABBITMQ_HOST
+              value: rabbitmq
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: RABBITMQ_USERNAME
+              value: guest
+            - name: RABBITMQ_PASSWORD
+              value: guest
             - name: API_GATEWAY_URL
               value: $GATEWAY_URL
             - name: CLIENT_URL
