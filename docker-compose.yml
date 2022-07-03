@@ -23,5 +23,9 @@ services:
       - PAYPAL_MODE=sandbox
       - PAYPAL_CLIENT_ID=AdBfJpK5VQKl5iSHVw50HcddES33MeoDGhOA7Toji54JhM5LkQBCw2kQPFrPupg29I4bZRetNp5Xtnq-
       - PAYPAL_CLIENT_SECRET=EAGGylODahWMNv-ZEO0C9uFDBVfnB-IBVAH7uZ6pzL8d4ywww1tlHkjVTFlK8qxeifgeqe0m6xNneMsq
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USERNAME=guest
+      - RABBITMQ_PASSWORD=guest
     depends_on:
       - db-payments
